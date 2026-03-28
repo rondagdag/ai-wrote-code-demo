@@ -1,0 +1,52 @@
+Demo 3: Spec-Driven Development with spec-kit
+==============================================
+
+FILES CREATED:
+
+1. README.md
+   - 80-line focused README
+   - Pre-flight checklist
+   - 4-step demo structure (Show Spec → Run Pipeline → Show Results → Show PR)
+   - A-HA moment and checkpoint summary
+
+2. DEMO_PROMPTS.md
+   - Presenter notes with timing (10 min total)
+   - Step-by-step slash commands for spec-kit
+   - What to say at each stage
+   - Backup plan if spec-kit fails
+   - Key talking points
+
+3. specs/voting-feature.spec.md
+   - 121-line feature specification
+   - Interface contract (endpoint, request, response, errors)
+   - 7 acceptance criteria (testable conditions)
+   - Security & performance constraints
+   - Non-goals section
+   - 10 test scenarios (happy path + edge cases)
+
+4. .claude/settings.json
+   - Claude Code project configuration
+   - Spec directory path
+   - Context files reference
+
+5. CLAUDE.md
+   - 40-line project context document
+   - Tech stack (Node.js, Express, PostgreSQL, Zod)
+   - Coding standards (TypeScript strict, API design, validation)
+   - Architecture guidelines (routes, middleware, testing)
+   - Available middleware documentation
+   - Testing expectations
+
+KEY MESSAGE:
+Spec-kit turns a 60-line spec into 400+ lines of code + tests.
+The spec IS the review checklist. CI enforces spec compliance.
+
+TO USE:
+1. Have VS Code open with Claude Code extension in agent mode
+2. Install spec-kit: uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+3. Initialize project: specify init votejam --ai claude
+4. Run /speckit.plan → /speckit.tasks → /speckit.implement
+5. Show results with /speckit.checklist
+6. Link spec to GitHub PR for final "contract not conversation" message
+
+DEMO TIME: 10 minutes
