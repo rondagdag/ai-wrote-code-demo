@@ -15,3 +15,15 @@ export const validateBody = (schema: ZodSchema) => {
     }
   };
 };
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export const validateUUID = (paramName: string) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const value = req.params[paramName];
+    if (!UUID_REGEX.test(value)) {
+      throw new AppError(`Invalid ${paramName} format`, 400, 'VALIDATION_ERROR');
+    }
+    next();
+  };
+};

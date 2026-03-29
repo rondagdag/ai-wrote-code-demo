@@ -170,9 +170,9 @@ describe('Songs Routes', () => {
 
       // Manually update votes to test sorting
       const songs = songRepo.getAll();
-      songRepo.updateVotes(songs[0].id, 'user1', 'up');
-      songRepo.updateVotes(songs[0].id, 'user2', 'up');
-      songRepo.updateVotes(songs[1].id, 'user1', 'up');
+      songRepo.castVote(songs[0].id, 'user1', 'up');
+      songRepo.castVote(songs[0].id, 'user2', 'up');
+      songRepo.castVote(songs[1].id, 'user1', 'up');
 
       const response = await request(app).get('/api/v1/songs');
 

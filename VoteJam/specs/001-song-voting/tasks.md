@@ -15,9 +15,9 @@ description: "Implementation tasks for the song voting feature"
 
 **Purpose**: Align schema/contracts and test harness with the planned vote model.
 
-- [ ] T001 Add vote-related TypeScript DTO interfaces for request/response in src/types/Vote.ts
-- [ ] T002 Add repository contract types for vote operations in src/repositories/songRepo.ts
-- [ ] T003 [P] Add OpenAPI contract verification notes for vote response shape in specs/001-song-voting/contracts/vote.openapi.yaml
+- [X] T001 Add vote-related TypeScript DTO interfaces for request/response in src/types/Vote.ts
+- [X] T002 Add repository contract types for vote operations in src/repositories/songRepo.ts
+- [X] T003 [P] Add OpenAPI contract verification notes for vote response shape in specs/001-song-voting/contracts/vote.openapi.yaml
 
 ---
 
@@ -27,11 +27,11 @@ description: "Implementation tasks for the song voting feature"
 
 **CRITICAL**: No user story work starts before this phase completes.
 
-- [ ] T004 Implement UUID path param validator middleware for songId in src/middleware/validation.ts
-- [ ] T005 [P] Refactor rate limiter to support named limits and per-user keying in src/middleware/rateLimit.ts
-- [ ] T006 [P] Update auth user typing for stable per-user vote key usage in src/middleware/auth.ts
-- [ ] T007 Update error code constants and mappings for SONG_NOT_FOUND and RATE_LIMITED in src/utils/errors.ts
-- [ ] T008 Create reusable vote response builder utility in src/routes/songs.ts
+- [X] T004 Implement UUID path param validator middleware for songId in src/middleware/validation.ts
+- [X] T005 [P] Refactor rate limiter to support named limits and per-user keying in src/middleware/rateLimit.ts
+- [X] T006 [P] Update auth user typing for stable per-user vote key usage in src/middleware/auth.ts
+- [X] T007 Update error code constants and mappings for SONG_NOT_FOUND and RATE_LIMITED in src/utils/errors.ts
+- [X] T008 Create reusable vote response builder utility in src/routes/songs.ts
 
 **Checkpoint**: Foundation complete. User stories can now proceed.
 
@@ -45,16 +45,16 @@ description: "Implementation tasks for the song voting feature"
 
 ### Tests For User Story 1
 
-- [ ] T009 [P] [US1] Add happy-path integration tests for insert/toggle/switch behavior in src/routes/__tests__/votes.test.ts
-- [ ] T010 [P] [US1] Add repository-level vote state transition tests for NO_VOTE/UP/DOWN transitions in src/routes/__tests__/votes.test.ts
+- [X] T009 [P] [US1] Add happy-path integration tests for insert/toggle/switch behavior in src/routes/__tests__/votes.test.ts
+- [X] T010 [P] [US1] Add repository-level vote state transition tests for NO_VOTE/UP/DOWN transitions in src/routes/__tests__/votes.test.ts
 
 ### Implementation For User Story 1
 
-- [ ] T011 [US1] Replace single-vote-per-user guard with toggle/switch vote semantics in src/repositories/songRepo.ts
-- [ ] T012 [US1] Return vote operation result shape { songId, votes, userVote } from repository methods in src/repositories/songRepo.ts
-- [ ] T013 [US1] Update POST /api/v1/songs/:songId/vote handler to use toggle/switch repository contract in src/routes/songs.ts
-- [ ] T014 [US1] Ensure downvotes and direction switches apply net score effects defined in specs/001-song-voting/data-model.md in src/repositories/songRepo.ts
-- [ ] T015 [US1] Update response typing to use vote-specific DTO instead of Song for vote endpoint in src/routes/songs.ts
+- [X] T011 [US1] Replace single-vote-per-user guard with toggle/switch vote semantics in src/repositories/songRepo.ts
+- [X] T012 [US1] Return vote operation result shape { songId, votes, userVote } from repository methods in src/repositories/songRepo.ts
+- [X] T013 [US1] Update POST /api/v1/songs/:songId/vote handler to use toggle/switch repository contract in src/routes/songs.ts
+- [X] T014 [US1] Ensure downvotes and direction switches apply net score effects defined in specs/001-song-voting/data-model.md in src/repositories/songRepo.ts
+- [X] T015 [US1] Update response typing to use vote-specific DTO instead of Song for vote endpoint in src/routes/songs.ts
 
 **Checkpoint**: User Story 1 is fully functional and testable independently.
 
@@ -68,15 +68,15 @@ description: "Implementation tasks for the song voting feature"
 
 ### Tests For User Story 2
 
-- [ ] T016 [P] [US2] Add validation/error-path tests for 400 invalid UUID and invalid direction in src/routes/__tests__/votes.test.ts
-- [ ] T017 [P] [US2] Add authorization and not-found tests for 401 and 404 SONG_NOT_FOUND in src/routes/__tests__/votes.test.ts
+- [X] T016 [P] [US2] Add validation/error-path tests for 400 invalid UUID and invalid direction in src/routes/__tests__/votes.test.ts
+- [X] T017 [P] [US2] Add authorization and not-found tests for 401 and 404 SONG_NOT_FOUND in src/routes/__tests__/votes.test.ts
 
 ### Implementation For User Story 2
 
-- [ ] T018 [US2] Apply songId UUID validation middleware before repository access in src/routes/songs.ts
-- [ ] T019 [US2] Normalize vote endpoint not-found error code/message to SONG_NOT_FOUND in src/routes/songs.ts
-- [ ] T020 [US2] Align validation failure response code with API contract expectations in src/middleware/validation.ts
-- [ ] T021 [US2] Verify vote endpoint middleware order (requireAuth -> rateLimit -> validation -> handler) in src/routes/songs.ts
+- [X] T018 [US2] Apply songId UUID validation middleware before repository access in src/routes/songs.ts
+- [X] T019 [US2] Normalize vote endpoint not-found error code/message to SONG_NOT_FOUND in src/routes/songs.ts
+- [X] T020 [US2] Align validation failure response code with API contract expectations in src/middleware/validation.ts
+- [X] T021 [US2] Verify vote endpoint middleware order (requireAuth -> rateLimit -> validation -> handler) in src/routes/songs.ts
 
 **Checkpoint**: User Story 2 is fully functional and testable independently.
 
@@ -90,15 +90,15 @@ description: "Implementation tasks for the song voting feature"
 
 ### Tests For User Story 3
 
-- [ ] T022 [P] [US3] Add per-user 10-per-minute rate limit tests (same user throttled, different user allowed) in src/routes/__tests__/votes.test.ts
-- [ ] T023 [P] [US3] Add concurrent voting behavior test coverage for deterministic total in src/routes/__tests__/votes.test.ts
+- [X] T022 [P] [US3] Add per-user 10-per-minute rate limit tests (same user throttled, different user allowed) in src/routes/__tests__/votes.test.ts
+- [X] T023 [P] [US3] Add concurrent voting behavior test coverage for deterministic total in src/routes/__tests__/votes.test.ts
 
 ### Implementation For User Story 3
 
-- [ ] T024 [US3] Configure vote route to use a named limiter configured for 10 requests per 60s in src/routes/songs.ts
-- [ ] T025 [US3] Implement limiter key function that prefers req.user.id over IP for vote route in src/middleware/rateLimit.ts
-- [ ] T026 [US3] Update rate limit error payload to return 429 RATE_LIMITED for vote endpoint in src/middleware/rateLimit.ts
-- [ ] T027 [US3] Make repository vote mutation path atomic for in-memory consistency under concurrent updates in src/repositories/songRepo.ts
+- [X] T024 [US3] Configure vote route to use a named limiter configured for 10 requests per 60s in src/routes/songs.ts
+- [X] T025 [US3] Implement limiter key function that prefers req.user.id over IP for vote route in src/middleware/rateLimit.ts
+- [X] T026 [US3] Update rate limit error payload to return 429 RATE_LIMITED for vote endpoint in src/middleware/rateLimit.ts
+- [X] T027 [US3] Make repository vote mutation path atomic for in-memory consistency under concurrent updates in src/repositories/songRepo.ts
 
 **Checkpoint**: User Story 3 is fully functional and testable independently.
 
@@ -108,10 +108,10 @@ description: "Implementation tasks for the song voting feature"
 
 **Purpose**: Final alignment, documentation, and end-to-end verification.
 
-- [ ] T028 [P] Update endpoint behavior notes and examples for toggle/rate-limit semantics in specs/001-song-voting/quickstart.md
-- [ ] T029 [P] Update feature contract examples for final error codes and vote response payload in specs/001-song-voting/contracts/vote.openapi.yaml
-- [ ] T030 Run full vote test suite and validate no regression in songs routes tests in src/routes/__tests__/votes.test.ts
-- [ ] T031 Run build verification and fix any type issues introduced by vote DTO changes in tsconfig.json
+- [X] T028 [P] Update endpoint behavior notes and examples for toggle/rate-limit semantics in specs/001-song-voting/quickstart.md
+- [X] T029 [P] Update feature contract examples for final error codes and vote response payload in specs/001-song-voting/contracts/vote.openapi.yaml
+- [X] T030 Run full vote test suite and validate no regression in songs routes tests in src/routes/__tests__/votes.test.ts
+- [X] T031 Run build verification and fix any type issues introduced by vote DTO changes in tsconfig.json
 
 ---
 

@@ -1,12 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { requireAuth } from '../middleware/auth';
-import { validateBody } from '../middleware/validation';
+import { validateBody, validateUUID } from '../middleware/validation';
 import { rateLimit } from '../middleware/rateLimit';
 import { songRepo } from '../repositories/songRepo';
 import { AppError } from '../utils/errors';
 import { ApiResponse } from '../types/ApiResponse';
 import { Song } from '../types/Song';
+import { VoteResponseData } from '../types/Vote';
 
 const router = Router();
 
@@ -16,8 +17,16 @@ const CreateSongSchema = z.object({
 });
 
 const VoteSongSchema = z.object({
-  direction: z.enum(['up', 'down']),
+  direction: z.enum(['up', 'down'], {
+    errorMap: () => ({ message: 'direction must be "up" or "down"' }),
+  }),
 });
+
+const voteRateLimit = rateLimit('vote', 10, 60 * 1000);
+
+function buildVoteResponse(data: VoteResponseData): ApiResponse<VoteResponseData> {
+  return { data, error: null };
+}
 
 // POST /api/v1/songs - Submit a new song
 router.post(
@@ -57,33 +66,27 @@ router.get('/api/v1/songs', (req: Request, res: Response) => {
 });
 
 // POST /api/v1/songs/:songId/vote - Vote on a song
+// Middleware order: requireAuth -> voteRateLimit -> validateUUID -> validateBody -> handler
 router.post(
   '/api/v1/songs/:songId/vote',
   requireAuth,
-  rateLimit,
+  voteRateLimit,
+  validateUUID('songId'),
   validateBody(VoteSongSchema),
   (req: Request, res: Response) => {
     const { songId } = req.params;
     const { direction } = req.body;
     const userId = req.user!.id;
 
-    if (songRepo.hasUserVoted(songId, userId)) {
-      throw new AppError('User has already voted for this song', 400, 'BAD_REQUEST');
+    const result = songRepo.castVote(songId, userId, direction);
+
+    if (!result) {
+      throw new AppError('Song not found', 404, 'SONG_NOT_FOUND');
     }
 
-    const song = songRepo.updateVotes(songId, userId, direction);
-
-    if (!song) {
-      throw new AppError('Song not found', 404, 'NOT_FOUND');
-    }
-
-    const response: ApiResponse<Song> = {
-      data: song,
-      error: null,
-    };
-
-    res.status(200).json(response);
+    res.status(200).json(buildVoteResponse(result));
   }
 );
 
 export default router;
+

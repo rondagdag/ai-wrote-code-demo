@@ -1,14 +1,13 @@
 import { Song } from '../types/Song';
+import { VoteResponseData } from '../types/Vote';
 import { randomUUID } from 'crypto';
+
+export type VoteResult = VoteResponseData;
 
 class SongRepository {
   private songs: Map<string, Song> = new Map();
-  private userVotes: Map<string, Set<string>> = new Map(); // Map<songId, Set<userId>>
-
-  hasUserVoted(songId: string, userId: string): boolean {
-    const votes = this.userVotes.get(songId);
-    return votes ? votes.has(userId) : false;
-  }
+  // Key: `${songId}:${userId}` -> current vote direction
+  private userVotes: Map<string, 'up' | 'down'> = new Map();
 
   getAll(): Song[] {
     return Array.from(this.songs.values()).sort((a, b) => b.votes - a.votes);
@@ -29,28 +28,29 @@ class SongRepository {
     return newSong;
   }
 
-  updateVotes(id: string, userId: string, direction: 'up' | 'down'): Song | undefined {
-    if (this.hasUserVoted(id, userId)) {
-      return undefined;
+  castVote(songId: string, userId: string, direction: 'up' | 'down'): VoteResult | null {
+    const song = this.songs.get(songId);
+    if (!song) return null;
+
+    const voteKey = `${songId}:${userId}`;
+    const current = this.userVotes.get(voteKey);
+
+    if (current === direction) {
+      // Toggle off: reverse the effect and clear the vote
+      song.votes += direction === 'up' ? -1 : 1;
+      this.userVotes.delete(voteKey);
+      return { songId, votes: song.votes, userVote: null };
+    } else if (current !== undefined) {
+      // Switch direction: net effect is ±2
+      song.votes += direction === 'up' ? 2 : -2;
+      this.userVotes.set(voteKey, direction);
+      return { songId, votes: song.votes, userVote: direction };
+    } else {
+      // Fresh vote
+      song.votes += direction === 'up' ? 1 : -1;
+      this.userVotes.set(voteKey, direction);
+      return { songId, votes: song.votes, userVote: direction };
     }
-
-    const song = this.songs.get(id);
-    if (!song) return undefined;
-
-    if (direction === 'up') {
-      song.votes += 1;
-    } else if (direction === 'down') {
-      song.votes = Math.max(0, song.votes - 1);
-    }
-
-    let votes = this.userVotes.get(id);
-    if (!votes) {
-      votes = new Set<string>();
-      this.userVotes.set(id, votes);
-    }
-    votes.add(userId);
-
-    return song;
   }
 
   delete(id: string): boolean {
@@ -64,3 +64,4 @@ class SongRepository {
 }
 
 export const songRepo = new SongRepository();
+
