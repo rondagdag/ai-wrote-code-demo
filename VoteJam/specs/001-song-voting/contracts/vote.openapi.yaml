@@ -1,0 +1,141 @@
+openapi: 3.0.3
+info:
+  title: VoteJam Song Voting API
+  version: 0.1.0
+  description: Contract for voting on songs in the VoteJam playlist.
+paths:
+  /api/v1/songs/{songId}/vote:
+    post:
+      summary: Vote on a song
+      description: Upvote or downvote a song for the authenticated user with toggle behavior.
+      operationId: voteSong
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: songId
+          in: path
+          required: true
+          description: Song UUID
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VoteRequest'
+      responses:
+        '200':
+          description: Vote applied successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VoteResponse'
+        '400':
+          description: Validation failure (invalid UUID or direction)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Missing or invalid auth token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                unauthorized:
+                  value:
+                    data: null
+                    error:
+                      code: UNAUTHORIZED
+                      message: Missing or invalid authorization header
+        '404':
+          description: Song does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                notFound:
+                  value:
+                    data: null
+                    error:
+                      code: SONG_NOT_FOUND
+                      message: Song not found
+        '429':
+          description: Too many vote changes in the current window
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                rateLimited:
+                  value:
+                    data: null
+                    error:
+                      code: RATE_LIMITED
+                      message: Too many vote changes, please try again later.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    VoteRequest:
+      type: object
+      required:
+        - direction
+      properties:
+        direction:
+          type: string
+          enum:
+            - up
+            - down
+    VoteResponse:
+      type: object
+      required:
+        - data
+        - error
+      properties:
+        data:
+          type: object
+          required:
+            - songId
+            - votes
+            - userVote
+          properties:
+            songId:
+              type: string
+              format: uuid
+            votes:
+              type: integer
+            userVote:
+              oneOf:
+                - type: string
+                  enum:
+                    - up
+                    - down
+                - type: 'null'
+        error:
+          type: 'null'
+    ErrorResponse:
+      type: object
+      required:
+        - data
+        - error
+      properties:
+        data:
+          type: 'null'
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+            message:
+              type: string
