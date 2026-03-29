@@ -7,6 +7,7 @@ Copy and paste this into a new GitHub issue in your repo.
 ## Add search endpoint for songs
 
 ### Description
+This is for VoteJam project. We want to allow users to search for songs by title or artist. This endpoint will power the search bar in our frontend.
 Add a GET endpoint at `/api/v1/songs/search` that accepts a `q` query parameter and returns songs matching by title or artist (case-insensitive).
 
 ### Requirements
