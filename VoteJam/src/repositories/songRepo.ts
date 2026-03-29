@@ -13,6 +13,17 @@ class SongRepository {
     return Array.from(this.songs.values()).sort((a, b) => b.votes - a.votes);
   }
 
+  search(q: string): Song[] {
+    const query = q.toLowerCase();
+    return Array.from(this.songs.values())
+      .filter(
+        (song) =>
+          song.title.toLowerCase().includes(query) ||
+          song.artist.toLowerCase().includes(query)
+      )
+      .sort((a, b) => b.votes - a.votes);
+  }
+
   getById(id: string): Song | undefined {
     return this.songs.get(id);
   }
