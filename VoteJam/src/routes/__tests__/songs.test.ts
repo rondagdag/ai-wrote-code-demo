@@ -221,4 +221,80 @@ describe('Songs Routes', () => {
       expect(response.body.data[0]).toHaveProperty('createdAt');
     });
   });
+
+  describe('GET /api/v1/songs/search', () => {
+    beforeEach(async () => {
+      await request(app)
+        .post('/api/v1/songs')
+        .set('Authorization', 'Bearer token1')
+        .send({ title: 'Bohemian Rhapsody', artist: 'Queen' });
+
+      await request(app)
+        .post('/api/v1/songs')
+        .set('Authorization', 'Bearer token2')
+        .send({ title: 'Hotel California', artist: 'Eagles' });
+
+      await request(app)
+        .post('/api/v1/songs')
+        .set('Authorization', 'Bearer token3')
+        .send({ title: 'Stairway to Heaven', artist: 'Led Zeppelin' });
+    });
+
+    it('should return matching songs by title (case-insensitive)', async () => {
+      const response = await request(app).get('/api/v1/songs/search?q=bohemian');
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toHaveLength(1);
+      expect(response.body.data[0].title).toBe('Bohemian Rhapsody');
+      expect(response.body.error).toBeNull();
+    });
+
+    it('should return matching songs by artist (case-insensitive)', async () => {
+      const response = await request(app).get('/api/v1/songs/search?q=queen');
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toHaveLength(1);
+      expect(response.body.data[0].artist).toBe('Queen');
+      expect(response.body.error).toBeNull();
+    });
+
+    it('should return empty array when no songs match', async () => {
+      const response = await request(app).get('/api/v1/songs/search?q=nonexistent');
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toEqual([]);
+      expect(response.body.error).toBeNull();
+    });
+
+    it('should return 400 when q parameter is missing', async () => {
+      const response = await request(app).get('/api/v1/songs/search');
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('should return 400 when q parameter is empty', async () => {
+      const response = await request(app).get('/api/v1/songs/search?q=');
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('should return multiple matches when query matches several songs', async () => {
+      // 'ea' matches 'Queen' (artist), 'Eagles' (artist), and 'Stairway to Heaven' (title)
+      const response = await request(app).get('/api/v1/songs/search?q=ea');
+
+      expect(response.status).toBe(200);
+      expect(response.body.data.length).toBeGreaterThan(1);
+      expect(response.body.error).toBeNull();
+    });
+
+    it('should not require authentication', async () => {
+      const response = await request(app).get('/api/v1/songs/search?q=queen');
+
+      expect(response.status).toBe(200);
+    });
+  });
 });
