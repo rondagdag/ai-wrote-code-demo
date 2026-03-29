@@ -14,6 +14,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: cd VoteJam
       - run: npm install
+        working-directory: VoteJam
       - run: npx tsc --noEmit
+        working-directory: VoteJam
