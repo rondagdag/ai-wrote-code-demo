@@ -46,7 +46,7 @@ Each step adds rigor, structure, and autonomy.
 
 ## Decision Matrix
 
-| | Vibe | Context Eng | Spec-Driven | Autonomous Agents |
+| | Vibe | Context Eng | Spec-Driven | Event-Driven Agents |
 |---|---|---|---|---|
 | **Speed** | Minutes | Hours | Hours | Hours (async) |
 | **Consistency** | Low | High | Highest | High + guardrails |
