@@ -17,6 +17,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@rollup/rollup-linux-arm64-gnu": "^4.60.1",
     "express": "^4.18.2",
     "zod": "^3.22.4"
   },

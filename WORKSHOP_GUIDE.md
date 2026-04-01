@@ -15,7 +15,7 @@
 | — | Before/After comparison | 2 min | Slides | Emotional peak of the talk |
 | — | Spec-Driven theory slides | 3 min | Slides | "The spec IS the review checklist" |
 | 3 | **Demo: Spec-Driven** | 10 min | VS Code + Claude Code | "60-line spec → 400+ validated lines" |
-| — | Autonomous Agents intro | 3 min | Slides | "Agents work async — like a teammate" |
+| — | Event-Driven Agents intro | 3 min | Slides | "Agents work async — like a teammate" |
 | 4 | **Demo: Copilot Agent** | 3 min | GitHub | "Issue before lunch, PR after lunch" |
 | 5 | **Demo: @claude** | 3 min | GitHub | "Reviews PRs while you sleep" |
 | — | Playbook + Close | 5 min | Slides | "Match the method to the risk" |
