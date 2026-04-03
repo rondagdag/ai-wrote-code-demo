@@ -36,6 +36,15 @@ class SongRepository {
     return song;
   }
 
+  search(query: string): Song[] {
+    const q = query.toLowerCase();
+    return Array.from(this.songs.values()).filter(
+      (song) =>
+        song.title.toLowerCase().includes(q) ||
+        song.artist.toLowerCase().includes(q)
+    );
+  }
+
   delete(id: string): boolean {
     return this.songs.delete(id);
   }

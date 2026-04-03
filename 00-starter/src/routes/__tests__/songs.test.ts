@@ -221,4 +221,81 @@ describe('Songs Routes', () => {
       expect(response.body.data[0]).toHaveProperty('createdAt');
     });
   });
+
+  describe('GET /api/v1/songs/search', () => {
+    beforeEach(async () => {
+      await request(app)
+        .post('/api/v1/songs')
+        .set('Authorization', 'Bearer token1')
+        .send({ title: 'Bohemian Rhapsody', artist: 'Queen' });
+
+      await request(app)
+        .post('/api/v1/songs')
+        .set('Authorization', 'Bearer token2')
+        .send({ title: 'Somebody That I Used to Know', artist: 'Gotye' });
+
+      await request(app)
+        .post('/api/v1/songs')
+        .set('Authorization', 'Bearer token3')
+        .send({ title: 'Rolling in the Deep', artist: 'Adele' });
+    });
+
+    it('should return matching songs when searching by title', async () => {
+      const response = await request(app).get('/api/v1/songs/search?q=bohemian');
+
+      expect(response.status).toBe(200);
+      expect(response.body.error).toBeNull();
+      expect(response.body.data).toHaveLength(1);
+      expect(response.body.data[0].title).toBe('Bohemian Rhapsody');
+    });
+
+    it('should return matching songs when searching by artist', async () => {
+      const response = await request(app).get('/api/v1/songs/search?q=queen');
+
+      expect(response.status).toBe(200);
+      expect(response.body.error).toBeNull();
+      expect(response.body.data).toHaveLength(1);
+      expect(response.body.data[0].artist).toBe('Queen');
+    });
+
+    it('should be case-insensitive', async () => {
+      const response = await request(app).get('/api/v1/songs/search?q=ADELE');
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toHaveLength(1);
+      expect(response.body.data[0].artist).toBe('Adele');
+    });
+
+    it('should return empty array when no matches found', async () => {
+      const response = await request(app).get('/api/v1/songs/search?q=nonexistent');
+
+      expect(response.status).toBe(200);
+      expect(response.body.error).toBeNull();
+      expect(response.body.data).toEqual([]);
+    });
+
+    it('should return 400 with VALIDATION_ERROR when q param is missing', async () => {
+      const response = await request(app).get('/api/v1/songs/search');
+
+      expect(response.status).toBe(400);
+      expect(response.body.data).toBeNull();
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('should return 400 with VALIDATION_ERROR when q param is empty', async () => {
+      const response = await request(app).get('/api/v1/songs/search?q=');
+
+      expect(response.status).toBe(400);
+      expect(response.body.data).toBeNull();
+      expect(response.body.error).toBeDefined();
+      expect(response.body.error.code).toBe('VALIDATION_ERROR');
+    });
+
+    it('should not require authentication', async () => {
+      const response = await request(app).get('/api/v1/songs/search?q=queen');
+
+      expect(response.status).toBe(200);
+    });
+  });
 });
