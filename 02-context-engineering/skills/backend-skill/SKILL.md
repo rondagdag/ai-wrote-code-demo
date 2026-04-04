@@ -1,8 +1,12 @@
-# Backend Development Skill — VoteJam
+# Backend Development Context — VoteJam
+
+> **For GitHub Copilot demo:** Copy the content below into `.github/copilot-instructions.md`
+> alongside the content from `knowledge/coding-standards.ki.md` and `knowledge/api-patterns.ki.md`.
+> Together they form the complete copilot-instructions.md for the demo.
 
 ## Purpose
-This Skill equips the Antigravity agent with backend development patterns,
-security rules, and testing conventions for the VoteJam Express/PostgreSQL API.
+This file provides backend development patterns, security rules, and testing conventions
+for the VoteJam Express/PostgreSQL API — structured as context for GitHub Copilot.
 Automatically loads when working in `src/routes/`, `src/repositories/`, or `src/middleware/`.
 
 ---
