@@ -2,34 +2,45 @@
 ## Same Prompt, Better Output (10 min)
 
 ### What You'll Prove
-Same prompt complexity as Demo 1 → dramatically better output. The difference? Structured context loaded into GitHub Copilot via a custom instructions file.
+Same prompt complexity as Demo 1 → dramatically better output. The difference? Three layers of structured context loaded into GitHub Copilot.
 
-**GitHub Copilot** reads context from:
-- **`.github/copilot-instructions.md`** — Repo-level custom instructions (always loaded for this repo)
-- **`#file` references** — Pinned context files attached to a specific chat turn
-- **`@workspace`** — References the entire codebase during generation
+**The three context layers:**
+- **`.github/copilot-instructions.md`** — Always-on team standards (loaded automatically for every interaction)
+- **`#file:skills/backend-api.md`** — On-demand skill files for deep domain context (loaded per task)
+- **Slash commands** — Built-in Copilot actions (`/explain`, `/fix`, `/tests`, `/doc`)
 
 ### Pre-flight
-- [ ] VS Code open with VoteJam project loaded
-- [ ] GitHub Copilot extension active (check status bar)
-- [ ] Copilot Chat panel open (Ctrl+Alt+I / Cmd+Option+I)
-- [ ] `.github/copilot-instructions.md` visible in Explorer
-- [ ] Font size: 18pt+ in both editor and chat
 
-### Step 1: SHOW Context File (1.5 min)
+> **Setup:** Copy these two things into your VoteJam repo before the talk:
+> - `02-context-engineering/.github/copilot-instructions.md` → `.github/copilot-instructions.md`
+> - `02-context-engineering/skills/` folder → `skills/` at repo root
+>
+> Copilot picks up `copilot-instructions.md` automatically. Skill files are loaded on-demand via `#file` in chat.
+
+- [ ] VS Code open with VoteJam project loaded
+- [ ] GitHub Copilot extension active (check status bar — look for the Copilot icon)
+- [ ] Copilot Chat panel open (Ctrl+Alt+I / Cmd+Option+I)
+- [ ] `.github/copilot-instructions.md` visible in Explorer sidebar
+- [ ] `skills/backend-api.md` and `skills/frontend-ui.md` visible in Explorer
+- [ ] Font size: 18pt+ in both editor and chat panel
+
+---
+
+### Step 1: SHOW the Instructions File (1.5 min)
 Open `.github/copilot-instructions.md` in the editor.
 
-**Say:** "This is our team's context file for GitHub Copilot. It's automatically loaded for every Copilot interaction in this repo. No activation needed."
+**Say:** "This is our team's always-on context file. It's automatically loaded for every Copilot interaction in this repo. No activation, no prompting needed — it just loads."
 
 Scroll through and call out:
-- **Coding patterns section** — "Zod for validation, repository pattern, Express error handling"
-- **Security rules** — "All endpoints require auth by default. Parameterized queries only. Never string-concatenate SQL."
+- **Coding patterns** — "Zod for validation, repository pattern, Express error handling"
+- **Security rules** — "All endpoints require auth by default. Rate limiting is server-side only."
 - **Testing rules** — "Every route gets a test file. Happy path + auth failure + validation failure"
-- **Naming conventions** — "camelCase for variables, PascalCase for types, kebab-case for files"
 
 **Say:** "This is the equivalent of giving a new developer a complete onboarding packet — before they write their first line of code."
 
-### Step 2: BUILD (3 min)
+---
+
+### Step 2: BUILD with Instructions (3 min)
 Open Copilot Chat. Type this prompt exactly:
 
 ```
@@ -46,35 +57,87 @@ POST /api/v1/songs/:songId/vote with { direction: "up" | "down" }.
 - "Test file alongside the implementation. Our instructions say every route gets one."
 - "Same prompt as Lovable. Completely different output."
 
-### Step 3: COMPARE (1 min)
-Point out what's different from Demo 1:
-- Auth middleware (automatic, from instructions)
-- Server-side rate limiting (not client-side)
-- Tests alongside code (coverage from rules)
-- Team naming conventions (consistent, not invented)
+---
+
+### Step 3: COMPARE with Demo 1 (1 min)
+Point out what's different from Demo 1 (Lovable):
+- Auth middleware — automatic, from instructions (not UI-only like Lovable)
+- Server-side rate limiting — not client-side
+- Tests alongside code — came from instructions, zero extra prompting
+- Team naming conventions — consistent, not invented
+
+---
 
 ### Step 4: TRACE THE CONTEXT (1 min)
 Open `.github/copilot-instructions.md` side-by-side with the generated code.
 
-**Say:** "Here's the accountability layer. I can point to every decision in the generated code and trace it back to a line in our instructions file. This is transparent, reviewable AI output."
+**Say:** "Here's the accountability layer. I can trace every decision in the generated code back to a line in our instructions file."
 
 Point to:
 - `requireAuth` ← "All endpoints require auth" in instructions
 - Zod schema ← "Use Zod for all input validation" in instructions
-- Test file structure ← "Happy path + auth failure + validation failure" in instructions
+- Test structure ← "Happy path + auth failure + validation failure" in instructions
+
+---
+
+### Step 5: SKILLS — On-Demand Deep Context (2 min)
+
+**Say:** "The instructions file is always-on. But sometimes you need deeper domain knowledge for a specific task. That's where skill files come in."
+
+Open `skills/backend-api.md` in the editor. Scroll through it briefly.
+
+**Say:** "This skill file has deep backend patterns — rate limiting setup, pagination, a full reference implementation. It's not in the instructions file because you don't need it every time. You load it when the task calls for it."
+
+In Copilot Chat, type:
+
+```
+#file:skills/backend-api.md @workspace Add pagination to the GET /api/v1/songs endpoint.
+Limit: 1-100, default 20. Offset-based.
+```
+
+**Say:** "Notice the `#file` prefix. That's me pinning the skill file to this specific chat turn. Copilot now has the instructions file AND the backend skill loaded simultaneously."
+
+Point to the generated code:
+- "Coerce and validate the query params — that's from the skill file's pagination pattern."
+- "The response shape — `{ songs, total }` — directly from the skill file's reference."
+
+**Say:** "Two layers of context working together. Always-on instructions for team standards. On-demand skills for deep domain knowledge."
+
+---
+
+### Step 6: SLASH COMMANDS — Built-In Power (1 min)
+
+**Say:** "The third layer is Copilot's built-in commands. No files needed."
+
+Select a block of generated code in the editor. Then show each command:
+
+| Command | What it does | Say while showing |
+|---------|-------------|-------------------|
+| `/explain` | Explains selected code in plain English | "What does this middleware chain actually do?" |
+| `/fix` | Fixes a bug or type error in selection | "Copilot, this is failing — fix it." |
+| `/tests` | Generates tests for selected code | "Generate tests for just this function." |
+| `/doc` | Generates JSDoc/comments for selection | "Document this for the next dev." |
+
+**Say:** "These aren't context-dependent. They work on any code in any project. Fast, built-in, zero setup."
+
+---
 
 ### What the Audience Notices
-- Same prompt → wildly different output when context is structured
-- Instructions file is just a Markdown file — no new tooling needed
-- `@workspace` gives Copilot full codebase awareness
-- Every AI decision is traceable to a line in the instructions
-- The pattern works in Claude Code, Cursor, and any tool with an instructions file
+- Three layers: always-on instructions → on-demand skills → built-in commands
+- Instructions file is just a Markdown file — no new tooling required
+- Skills are also just Markdown — domain knowledge you load when needed
+- Every AI decision is traceable back to a file your team controls
+- The pattern works in Claude Code (CLAUDE.md), Cursor (.cursorrules), and Copilot
+
+---
 
 ### Checkpoint
-1. Context engineering = structuring what you know, not prompting better
-2. `.github/copilot-instructions.md` = the team's onboarding packet for AI
-3. Same instructions + `@workspace` = consistent output across the whole team
-4. Every AI decision is auditable
+1. Instructions file = always-on team onboarding for the AI
+2. Skill files = on-demand domain knowledge loaded with `#file`
+3. Slash commands = built-in power tools, no setup needed
+4. Three layers, one coherent system — context engineering, not prompt engineering
+
+---
 
 ### Backup
-If Copilot is slow: open the instructions file + a pre-written reference implementation side-by-side. Walk through how each section of the instructions influenced each section of the code. Same teaching moment, no live generation needed.
+If Copilot is slow: open the instructions file + a skill file + a pre-written reference implementation side-by-side. Walk through how each section influenced each section of the code. Same teaching moment, no live generation needed.

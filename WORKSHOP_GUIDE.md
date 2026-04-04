@@ -11,7 +11,7 @@
 | — | Context Window + Roadmap | 3 min | Slides | "Same model, different context, different output" |
 | 1 | **Demo: Vibe Coding** | 8 min | Lovable | "Fast ≠ shippable" |
 | — | Context Eng theory slides | 5 min | Slides | "Context is the multiplier" |
-| 2 | **Demo: Context Engineering** | 10 min | VS Code + GitHub Copilot | "Same prompt, dramatically better output" |
+| 2 | **Demo: Context Engineering** | 10 min | VS Code + GitHub Copilot | "Instructions + Skills + Slash Commands = three layers" |
 | — | Before/After comparison | 2 min | Slides | Emotional peak of the talk |
 | — | Spec-Driven theory slides | 3 min | Slides | "The spec IS the review checklist" |
 | 3 | **Demo: Spec-Driven** | 10 min | VS Code + Claude Code | "60-line spec → 400+ validated lines" |
@@ -42,7 +42,7 @@
 
 ### Tech Setup
 - [ ] Browser tabs ready: Lovable, GitHub issue, GitHub PR
-- [ ] VS Code Copilot: VoteJam open, Copilot Chat visible, copilot-instructions.md in Explorer
+- [ ] VS Code Copilot: VoteJam open, Copilot Chat visible, copilot-instructions.md + skills/ folder in Explorer
 - [ ] VS Code: VoteJam open, Claude Code agent mode, spec file in tab
 - [ ] Font size: 18pt+ in ALL tools
 - [ ] Backup: screenshots/recordings of each demo saved locally
@@ -56,7 +56,7 @@
      ↓
 01-vibe-coding/          ← Prompts only (Lovable is browser-based)
      ↓
-02-context-engineering/  ← copilot-instructions.md + context files for GitHub Copilot
+02-context-engineering/  ← copilot-instructions.md + skills/ (backend-api.md, frontend-ui.md)
      ↓                     JUMP POINT: start here if Demo 1 was pre-recorded
 03-spec-driven/          ← Spec file + CLAUDE.md + Claude Code config
      ↓                     JUMP POINT: start here if Demos 1-2 ran long

@@ -6,6 +6,8 @@
 - [ ] GitHub Copilot extension active (green icon in status bar)
 - [ ] Copilot Chat panel open (Ctrl+Alt+I / Cmd+Option+I)
 - [ ] `.github/copilot-instructions.md` visible in Explorer sidebar
+- [ ] `skills/backend-api.md` visible in Explorer (at repo root)
+- [ ] `skills/frontend-ui.md` visible in Explorer (at repo root)
 - [ ] Project in clean state (no pending changes)
 - [ ] Font size: 18pt+ in editor AND chat panel
 - [ ] Screen recording ready (backup)
@@ -142,6 +144,89 @@ Same prompt. Same AI model under the hood. One had a `.github/copilot-instructio
 
 ---
 
+---
+
+## Segment 5: Skills — On-Demand Deep Context (2 min)
+
+### What You'll Do
+1. Open `skills/backend-api.md` in the editor — scroll briefly
+2. Type the pagination prompt in Copilot Chat with a `#file` reference
+3. Point to how the skill file shaped the output
+
+### What to Say
+
+**Opening:**
+"The instructions file is always loaded. But what if you need deeper domain knowledge for a specific task? That's what skill files are for."
+
+**While showing the skill file:**
+"This is `backend-api.md`. A skill file. It has a complete rate limiting setup, pagination pattern, and a full reference implementation of the voting endpoint. I don't put this in `copilot-instructions.md` because you don't need it on every interaction — only when you're doing backend work."
+
+**Load the skill:**
+"Watch how I activate it."
+
+Type in Copilot Chat:
+```
+#file:skills/backend-api.md @workspace Add pagination to the GET /api/v1/songs endpoint.
+Limit: 1-100, default 20. Offset-based.
+```
+
+**While it generates:**
+"The `#file` prefix pins the skill file to this specific chat turn. Copilot now has TWO sources of context: the always-on instructions AND this skill. Watch the pagination pattern from the skill file appear in the output."
+
+**After generation — point to specific lines:**
+- "See `z.coerce.number()` for the query params? That's straight from the skill file's pagination pattern."
+- "The response shape `{ songs, total }` — documented in the skill file as the required format."
+- "`min(1).max(100).default(20)` — the exact constraints I specified in the skill."
+
+**Closing:**
+"Two layers of context, one coherent output. Instructions for the always-on team standards. Skills for the task you're doing right now."
+
+---
+
+## Segment 6: Slash Commands — Built-In Power (1 min)
+
+### What You'll Do
+1. Select a block of generated code in the editor
+2. Demonstrate 2-3 slash commands live — fast
+
+### Commands to Show
+
+**Select the route handler function, then:**
+
+```
+/explain
+```
+> "What does this middleware chain actually do? Plain English."
+> *(Copilot explains `requireAuth → voteLimiter → validateBody → handler` chain)*
+> "I use this when reviewing AI-generated code I don't fully understand yet."
+
+```
+/tests
+```
+> "Generate tests specifically for this function."
+> *(Copilot generates targeted tests)*
+> "Different from the `Include a test file` in the build prompt — this targets a specific selection."
+
+```
+/doc
+```
+> "Document this for the next developer."
+> *(Copilot adds JSDoc)*
+> "Zero effort documentation. Select. Slash. Done."
+
+### What to Say Closing
+
+"These are Copilot's built-in commands. No skill files needed. No context setup. They work on any code in any project."
+
+"So here's the full picture:
+- **Always-on:** `copilot-instructions.md` loads team standards for every interaction
+- **On-demand:** `#file:skills/backend-api.md` loads deep context for the specific task
+- **Built-in:** `/explain`, `/tests`, `/doc` — instant actions on selected code
+
+That's context engineering. Three layers. One coherent system."
+
+---
+
 ## Backup Plan (If Copilot is Slow or Fails)
 
 1. **Manual walkthrough mode:** Open the instructions file + a pre-written reference implementation side by side
@@ -155,12 +240,13 @@ Same prompt. Same AI model under the hood. One had a `.github/copilot-instructio
 
 | Segment | Duration |
 |---|---|
-| Segment 1 — Show Context File | 1.5 min |
-| Segment 2 — Build | 3 min (1 min setup + 2 min narration) |
-| Segment 3 — Compare | 1 min |
-| Segment 4 — Trace | 1 min |
-| Segment 5 — Checkpoint | 1 min |
-| **Total** | **~7.5 min (2.5 min buffer)** |
+| Segment 1 — Show Instructions File | 1.5 min |
+| Segment 2 — Build with Instructions | 3 min |
+| Segment 3 — Compare with Demo 1 | 1 min |
+| Segment 4 — Trace the Context | 1 min |
+| Segment 5 — Skills (#file) | 2 min |
+| Segment 6 — Slash Commands | 1 min |
+| **Total** | **~9.5 min (0.5 min buffer)** |
 
 ---
 
