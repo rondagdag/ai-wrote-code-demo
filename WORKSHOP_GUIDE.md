@@ -11,11 +11,11 @@
 | — | Context Window + Roadmap | 3 min | Slides | "Same model, different context, different output" |
 | 1 | **Demo: Vibe Coding** | 8 min | Lovable | "Fast ≠ shippable" |
 | — | Context Eng theory slides | 5 min | Slides | "Context is the multiplier" |
-| 2 | **Demo: Context Engineering** | 10 min | Antigravity | "Same prompt, dramatically better output" |
+| 2 | **Demo: Context Engineering** | 10 min | VS Code + GitHub Copilot | "Same prompt, dramatically better output" |
 | — | Before/After comparison | 2 min | Slides | Emotional peak of the talk |
 | — | Spec-Driven theory slides | 3 min | Slides | "The spec IS the review checklist" |
 | 3 | **Demo: Spec-Driven** | 10 min | VS Code + Claude Code | "60-line spec → 400+ validated lines" |
-| — | Autonomous Agents intro | 3 min | Slides | "Agents work async — like a teammate" |
+| — | Event-Driven Agents intro | 3 min | Slides | "Agents work async — like a teammate" |
 | 4 | **Demo: Copilot Agent** | 3 min | GitHub | "Issue before lunch, PR after lunch" |
 | 5 | **Demo: @claude** | 3 min | GitHub | "Reviews PRs while you sleep" |
 | — | Playbook + Close | 5 min | Slides | "Match the method to the risk" |
@@ -29,7 +29,7 @@
 
 ### Accounts & Access
 - [ ] Lovable (lovable.dev) — logged in, project ready
-- [ ] Google Antigravity — VoteJam loaded, Skills + KIs installed
+- [ ] VS Code + GitHub Copilot extension — VoteJam loaded, `.github/copilot-instructions.md` in place
 - [ ] VS Code + Claude Code extension — spec-kit initialized (`specify init votejam --ai claude`)
 - [ ] GitHub repo with VoteJam — both workflow files deployed
 - [ ] ANTHROPIC_API_KEY secret set in GitHub repo settings
@@ -42,7 +42,7 @@
 
 ### Tech Setup
 - [ ] Browser tabs ready: Lovable, GitHub issue, GitHub PR
-- [ ] Antigravity: VoteJam open, Skills panel visible
+- [ ] VS Code Copilot: VoteJam open, Copilot Chat visible, copilot-instructions.md in Explorer
 - [ ] VS Code: VoteJam open, Claude Code agent mode, spec file in tab
 - [ ] Font size: 18pt+ in ALL tools
 - [ ] Backup: screenshots/recordings of each demo saved locally
@@ -56,7 +56,7 @@
      ↓
 01-vibe-coding/          ← Prompts only (Lovable is browser-based)
      ↓
-02-context-engineering/  ← Skills + KIs + starter code for Antigravity
+02-context-engineering/  ← copilot-instructions.md + context files for GitHub Copilot
      ↓                     JUMP POINT: start here if Demo 1 was pre-recorded
 03-spec-driven/          ← Spec file + CLAUDE.md + Claude Code config
      ↓                     JUMP POINT: start here if Demos 1-2 ran long
@@ -74,7 +74,7 @@ Each folder is a checkpoint. You can jump to any section.
 | Problem | Fix |
 |---------|-----|
 | Lovable is down | Show pre-recorded video, keep talking |
-| Antigravity hangs | Walk through Skills/KI files directly, narrate expected output |
+| Copilot slow/offline | Open copilot-instructions.md + reference impl side by side, narrate the connections |
 | spec-kit fails | Show pre-run output, walk through the spec |
 | Copilot agent slow | "It's async — here's one it already finished" → pre-made PR |
 | @claude no response | Same — pre-made response ready |

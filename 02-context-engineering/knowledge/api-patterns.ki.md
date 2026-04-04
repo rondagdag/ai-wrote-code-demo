@@ -611,7 +611,7 @@ Every API endpoint in VoteJam must follow these patterns:
 - Authentication checks
 - Security rules
 
-When Antigravity generates endpoints, it should automatically apply these patterns.
+When GitHub Copilot generates endpoints, it should automatically apply these patterns.
 If generated endpoints violate these rules, it's a hint that this KI or the Backend-Skill
 needs to be updated.
 
