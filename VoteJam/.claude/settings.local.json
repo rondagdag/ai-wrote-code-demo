@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash .specify/scripts/bash/check-prerequisites.sh --json --paths-only)"
+    ]
+  }
+}
