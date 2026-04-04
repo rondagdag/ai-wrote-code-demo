@@ -42,7 +42,7 @@
 
 ### Tech Setup
 - [ ] Browser tabs ready: Lovable, GitHub issue, GitHub PR
-- [ ] VS Code Copilot: VoteJam open, Copilot Chat visible, copilot-instructions.md + skills/ folder in Explorer
+- [ ] VS Code Copilot: VoteJam open, Copilot Chat visible, `.github/copilot-instructions.md` + `.github/skills/` expanded in Explorer
 - [ ] VS Code: VoteJam open, Claude Code agent mode, spec file in tab
 - [ ] Font size: 18pt+ in ALL tools
 - [ ] Backup: screenshots/recordings of each demo saved locally
@@ -56,7 +56,7 @@
      ↓
 01-vibe-coding/          ← Prompts only (Lovable is browser-based)
      ↓
-02-context-engineering/  ← copilot-instructions.md + skills/ (backend-api.md, frontend-ui.md)
+02-context-engineering/  ← .github/copilot-instructions.md + .github/skills/ (SKILL.md agent skills)
      ↓                     JUMP POINT: start here if Demo 1 was pre-recorded
 03-spec-driven/          ← Spec file + CLAUDE.md + Claude Code config
      ↓                     JUMP POINT: start here if Demos 1-2 ran long

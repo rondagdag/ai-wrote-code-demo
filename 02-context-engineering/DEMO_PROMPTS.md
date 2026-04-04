@@ -6,8 +6,8 @@
 - [ ] GitHub Copilot extension active (green icon in status bar)
 - [ ] Copilot Chat panel open (Ctrl+Alt+I / Cmd+Option+I)
 - [ ] `.github/copilot-instructions.md` visible in Explorer sidebar
-- [ ] `skills/backend-api.md` visible in Explorer (at repo root)
-- [ ] `skills/frontend-ui.md` visible in Explorer (at repo root)
+- [ ] `.github/skills/` folder visible and **expanded** in Explorer (shows backend-api/ and frontend-ui/)
+- [ ] `.github/skills/backend-api/SKILL.md` ready to open
 - [ ] Project in clean state (no pending changes)
 - [ ] Font size: 18pt+ in editor AND chat panel
 - [ ] Screen recording ready (backup)
@@ -146,84 +146,96 @@ Same prompt. Same AI model under the hood. One had a `.github/copilot-instructio
 
 ---
 
-## Segment 5: Skills — On-Demand Deep Context (2 min)
+## Segment 5: Agent Skills — Auto-Loading Deep Context (2 min)
 
 ### What You'll Do
-1. Open `skills/backend-api.md` in the editor — scroll briefly
-2. Type the pagination prompt in Copilot Chat with a `#file` reference
-3. Point to how the skill file shaped the output
+1. Open `.github/skills/backend-api/SKILL.md` — walk through the frontmatter
+2. Show the second prompt (pagination) — point to auto-loaded skill output
+3. Explain the `description` as trigger + `allowed-tools` for the Coding Agent
 
 ### What to Say
 
 **Opening:**
-"The instructions file is always loaded. But what if you need deeper domain knowledge for a specific task? That's what skill files are for."
+"The instructions file is Layer 1 — always on. Agent skills are Layer 2 — they load automatically when you need them."
 
-**While showing the skill file:**
-"This is `backend-api.md`. A skill file. It has a complete rate limiting setup, pagination pattern, and a full reference implementation of the voting endpoint. I don't put this in `copilot-instructions.md` because you don't need it on every interaction — only when you're doing backend work."
+**Open `.github/skills/backend-api/SKILL.md`. Point to the frontmatter:**
 
-**Load the skill:**
-"Watch how I activate it."
-
-Type in Copilot Chat:
+```yaml
+---
+name: backend-api
+description: >
+  Deep backend development patterns for VoteJam's Express/TypeScript API.
+  Use when building new API routes, repository methods, middleware, or rate limiting.
+  Activates automatically when working on endpoints, handlers, src/routes/...
+allowed-tools:
+  - read_file
+  - write_file
+  - run_terminal_command
+---
 ```
-#file:skills/backend-api.md @workspace Add pagination to the GET /api/v1/songs endpoint.
+
+**While pointing to each field:**
+
+> `name:` — "The skill's identity. Lowercase, hyphen-separated. Matches the folder name."
+
+> `description:` — "This is the trigger. Copilot reads your prompt, reads this description, and decides whether to load the skill. I didn't type `#file` anywhere. The description IS the activation logic. Write it like a decision rule."
+
+> `allowed-tools:` — "This tells the Copilot Coding Agent — the async agent from Demo 4 — what it can do without asking for permission. `run_terminal_command` means it can run `npm test` automatically. No human approval needed."
+
+**Type a second build prompt:**
+
+```
+@workspace Add pagination to the GET /api/v1/songs endpoint.
 Limit: 1-100, default 20. Offset-based.
 ```
 
-**While it generates:**
-"The `#file` prefix pins the skill file to this specific chat turn. Copilot now has TWO sources of context: the always-on instructions AND this skill. Watch the pagination pattern from the skill file appear in the output."
+**While generating:**
+"No `#file`. No manual loading. Watch for the `z.coerce.number()` query param pattern and `{ songs, total }` response shape — those are from the backend-api skill. Copilot matched 'building an endpoint' to the skill's description and loaded it automatically."
 
-**After generation — point to specific lines:**
-- "See `z.coerce.number()` for the query params? That's straight from the skill file's pagination pattern."
-- "The response shape `{ songs, total }` — documented in the skill file as the required format."
-- "`min(1).max(100).default(20)` — the exact constraints I specified in the skill."
+**After generation — point to:**
+- "`z.coerce.number().int().min(1).max(100).default(20)` — straight from the skill's pagination pattern"
+- "`{ songs, total }` response shape — documented in the skill as the required format"
+- "`min(1).max(100)` — the exact constraints I wrote in the skill, not invented by the AI"
 
 **Closing:**
-"Two layers of context, one coherent output. Instructions for the always-on team standards. Skills for the task you're doing right now."
+"Two layers, both loaded. The instructions file set the always-on standards. The skill provided deep pagination knowledge automatically because my prompt matched."
 
 ---
 
 ## Segment 6: Slash Commands — Built-In Power (1 min)
 
 ### What You'll Do
-1. Select a block of generated code in the editor
-2. Demonstrate 2-3 slash commands live — fast
+Select a block of generated code. Show 3 slash commands fast.
 
 ### Commands to Show
 
-**Select the route handler function, then:**
+**Select the route handler, then:**
 
-```
-/explain
-```
-> "What does this middleware chain actually do? Plain English."
-> *(Copilot explains `requireAuth → voteLimiter → validateBody → handler` chain)*
-> "I use this when reviewing AI-generated code I don't fully understand yet."
+`/explain`
+> "What does this middleware chain actually do?"
+> *(Copilot explains `requireAuth → voteLimiter → validateBody → handler`)*
+> "I use this when reviewing AI-generated code I haven't fully read yet."
 
-```
-/tests
-```
-> "Generate tests specifically for this function."
+`/tests`
+> "Generate tests for just this selection."
 > *(Copilot generates targeted tests)*
-> "Different from the `Include a test file` in the build prompt — this targets a specific selection."
+> "Targeted — different from asking for a test file in the original build prompt."
 
-```
-/doc
-```
+`/doc`
 > "Document this for the next developer."
 > *(Copilot adds JSDoc)*
-> "Zero effort documentation. Select. Slash. Done."
+> "Zero effort. Select. Slash. Done."
 
-### What to Say Closing
+### Closing Line
 
-"These are Copilot's built-in commands. No skill files needed. No context setup. They work on any code in any project."
+"Layer 3 — built-in commands. No files, no setup. They work on any codebase."
 
-"So here's the full picture:
-- **Always-on:** `copilot-instructions.md` loads team standards for every interaction
-- **On-demand:** `#file:skills/backend-api.md` loads deep context for the specific task
-- **Built-in:** `/explain`, `/tests`, `/doc` — instant actions on selected code
+"Here's the full system:
+- **Layer 1:** `copilot-instructions.md` — always-on, team standards, every interaction
+- **Layer 2:** `.github/skills/[name]/SKILL.md` — auto-loads when prompt matches description
+- **Layer 3:** `/explain /fix /tests /doc` — instant actions on selected code
 
-That's context engineering. Three layers. One coherent system."
+That's context engineering. Three layers. One coherent system. Context over prompts."
 
 ---
 
@@ -241,12 +253,12 @@ That's context engineering. Three layers. One coherent system."
 | Segment | Duration |
 |---|---|
 | Segment 1 — Show Instructions File | 1.5 min |
-| Segment 2 — Build with Instructions | 3 min |
-| Segment 3 — Compare with Demo 1 | 1 min |
+| Segment 2 — Show Agent Skills (SKILL.md frontmatter) | 1.5 min |
+| Segment 3 — Build (watch skills auto-load) | 3 min |
 | Segment 4 — Trace the Context | 1 min |
-| Segment 5 — Skills (#file) | 2 min |
+| Segment 5 — Skills auto-load (pagination prompt) | 2 min |
 | Segment 6 — Slash Commands | 1 min |
-| **Total** | **~9.5 min (0.5 min buffer)** |
+| **Total** | **~10 min** |
 
 ---
 
