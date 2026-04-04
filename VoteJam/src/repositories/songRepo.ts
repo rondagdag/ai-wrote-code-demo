@@ -3,12 +3,7 @@ import { randomUUID } from 'crypto';
 
 class SongRepository {
   private songs: Map<string, Song> = new Map();
-  private userVotes: Map<string, Set<string>> = new Map(); // Map<songId, Set<userId>>
-
-  hasUserVoted(songId: string, userId: string): boolean {
-    const votes = this.userVotes.get(songId);
-    return votes ? votes.has(userId) : false;
-  }
+  private songVoters: Map<string, Set<string>> = new Map();
 
   getAll(): Song[] {
     return Array.from(this.songs.values()).sort((a, b) => b.votes - a.votes);
@@ -53,13 +48,29 @@ class SongRepository {
     return song;
   }
 
+  hasUserVoted(songId: string, userId: string): boolean {
+    const voters = this.songVoters.get(songId);
+    if (!voters) return false;
+    return voters.has(userId);
+  }
+
+  recordVote(songId: string, userId: string): void {
+    let voters = this.songVoters.get(songId);
+    if (!voters) {
+      voters = new Set<string>();
+      this.songVoters.set(songId, voters);
+    }
+    voters.add(userId);
+  }
+
   delete(id: string): boolean {
+    this.songVoters.delete(id);
     return this.songs.delete(id);
   }
 
   reset(): void {
     this.songs.clear();
-    this.userVotes.clear();
+    this.songVoters.clear();
   }
 }
 

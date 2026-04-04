@@ -2,112 +2,110 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import request from 'supertest';
 import app from '../../app';
 import { songRepo } from '../../repositories/songRepo';
-import { resetRateLimiter } from '../../middleware/rateLimit';
+
+const createSong = async (title: string, artist: string): Promise<string> => {
+  const res = await request(app)
+    .post('/api/v1/songs')
+    .set('Authorization', 'Bearer creator-token')
+    .send({ title, artist });
+
+  return res.body.data.id as string;
+};
 
 describe('POST /api/v1/songs/:songId/vote', () => {
-  const mockToken = 'testAlphaToken1';
-  const mockToken2 = 'differentToken2';
-  let songId: string;
-
   beforeEach(() => {
     songRepo.reset();
-    resetRateLimiter();
-
-    // Create a mock song
-    const song = songRepo.create({
-      title: 'Test Song',
-      artist: 'Test Artist',
-      submittedBy: 'user-submitter',
-      votes: 0,
-    });
-    songId = song.id;
   });
 
-  it('should upvote a song successfully', async () => {
+  it('returns 200 when vote is cast successfully', async () => {
+    const songId = await createSong('Song 1', 'Artist 1');
+
     const res = await request(app)
       .post(`/api/v1/songs/${songId}/vote`)
-      .set('Authorization', `Bearer ${mockToken}`)
+      .set('Authorization', 'Bearer voter-token')
       .send({ direction: 'up' });
 
     expect(res.status).toBe(200);
+    expect(res.body.data).toBeDefined();
+    expect(res.body.data.id).toBe(songId);
     expect(res.body.data.votes).toBe(1);
-    expect(songRepo.getById(songId)?.votes).toBe(1);
+    expect(res.body.error).toBeNull();
   });
 
-  it('should downvote a song successfully', async () => {
-    const res = await request(app)
-      .post(`/api/v1/songs/${songId}/vote`)
-      .set('Authorization', `Bearer ${mockToken}`)
-      .send({ direction: 'down' });
+  it('returns 401 when no token is provided', async () => {
+    const songId = await createSong('Song 1', 'Artist 1');
 
-    expect(res.status).toBe(200);
-    expect(res.body.data.votes).toBe(0); // 0 since it cant go below 0
-  });
-
-  it('should prevent a user from voting twice on the same song', async () => {
-    await request(app)
-      .post(`/api/v1/songs/${songId}/vote`)
-      .set('Authorization', `Bearer ${mockToken}`)
-      .send({ direction: 'up' });
-
-    const res = await request(app)
-      .post(`/api/v1/songs/${songId}/vote`)
-      .set('Authorization', `Bearer ${mockToken}`)
-      .send({ direction: 'down' });
-
-    expect(res.status).toBe(400);
-    expect(res.body.error.message).toContain('already voted');
-    expect(songRepo.getById(songId)?.votes).toBe(1);
-  });
-
-  it('should allow different users to vote on the same song', async () => {
-    await request(app)
-      .post(`/api/v1/songs/${songId}/vote`)
-      .set('Authorization', `Bearer ${mockToken}`)
-      .send({ direction: 'up' });
-
-    const res = await request(app)
-      .post(`/api/v1/songs/${songId}/vote`)
-      .set('Authorization', `Bearer ${mockToken2}`)
-      .send({ direction: 'up' });
-
-    expect(res.status).toBe(200);
-    expect(songRepo.getById(songId)?.votes).toBe(2);
-  });
-
-  it('should apply rate limiting', async () => {
-    // Fire 5 requests (the limit is 5)
-    for (let i = 0; i < 5; i++) {
-        await request(app)
-        .post(`/api/v1/songs/${songId}/vote`)
-        .set('Authorization', `Bearer token${i}`)
-        .send({ direction: 'up' });
-    }
-
-    // The 6th request from the same 'ip' (jest/vitest defaults to 127.0.0.1 without mock)
-    const res = await request(app)
-      .post(`/api/v1/songs/${songId}/vote`)
-      .set('Authorization', `Bearer ${mockToken2}`)
-      .send({ direction: 'up' });
-
-    expect(res.status).toBe(429);
-    expect(res.body.error.code).toBe('RATE_LIMIT_EXCEEDED');
-  });
-
-  it('should require authentication', async () => {
     const res = await request(app)
       .post(`/api/v1/songs/${songId}/vote`)
       .send({ direction: 'up' });
 
     expect(res.status).toBe(401);
+    expect(res.body.error.code).toBe('UNAUTHORIZED');
   });
 
-  it('should validate request body direction', async () => {
+  it('returns 400 when direction is invalid', async () => {
+    const songId = await createSong('Song 1', 'Artist 1');
+
     const res = await request(app)
       .post(`/api/v1/songs/${songId}/vote`)
-      .set('Authorization', `Bearer ${mockToken}`)
-      .send({ direction: 'left' });
+      .set('Authorization', 'Bearer validator-token')
+      .send({ direction: 'sideways' });
 
     expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
+  });
+
+  it('returns 409 when user has already voted on this song', async () => {
+    const songId = await createSong('Song 1', 'Artist 1');
+
+    await request(app)
+      .post(`/api/v1/songs/${songId}/vote`)
+      .set('Authorization', 'Bearer duplicate-token')
+      .send({ direction: 'up' });
+
+    const res = await request(app)
+      .post(`/api/v1/songs/${songId}/vote`)
+      .set('Authorization', 'Bearer duplicate-token')
+      .send({ direction: 'down' });
+
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('CONFLICT');
+  });
+
+  it('returns 404 when song does not exist', async () => {
+    const res = await request(app)
+      .post('/api/v1/songs/non-existent-song/vote')
+      .set('Authorization', 'Bearer missing-song-token')
+      .send({ direction: 'up' });
+
+    expect(res.status).toBe(404);
+    expect(res.body.error.code).toBe('NOT_FOUND');
+  });
+
+  it('returns 429 when vote rate limit is exceeded', async () => {
+    const voterToken = 'Bearer rate-limit-token';
+
+    const songIds = await Promise.all(
+      Array.from({ length: 6 }, (_, index) =>
+        createSong(`Rate Song ${index}`, `Rate Artist ${index}`)
+      )
+    );
+
+    for (let index = 0; index < 5; index += 1) {
+      const okRes = await request(app)
+        .post(`/api/v1/songs/${songIds[index]}/vote`)
+        .set('Authorization', voterToken)
+        .send({ direction: 'up' });
+
+      expect(okRes.status).toBe(200);
+    }
+
+    const limitedRes = await request(app)
+      .post(`/api/v1/songs/${songIds[5]}/vote`)
+      .set('Authorization', voterToken)
+      .send({ direction: 'up' });
+
+    expect(limitedRes.status).toBe(429);
+    expect(limitedRes.body.error.code).toBe('RATE_LIMITED');
   });
 });

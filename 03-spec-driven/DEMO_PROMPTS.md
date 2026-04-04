@@ -58,34 +58,43 @@ Or open in editor: `specs/voting-feature.spec.md`
 Run each command in sequence. Wait for completion between commands.
 
 ```
-/speckit.plan
+/constitution
 ```
-
-**What to Say (while running):**
-
-> "The agent is reading the spec. It's creating an implementation plan. Thinking about the structure, the layers, what needs to happen."
-
-Wait ~30 seconds. Then:
+> "First, we set project guardrails — architecture rules, naming conventions, what's off-limits. One time setup."
 
 ```
-/speckit.tasks
+/specify
 ```
-
-**What to Say:**
-
-> "Now it's breaking the plan into atomic tasks. Each task traces back to one or more acceptance criteria. You can see which criterion each task fulfills."
-
-Wait ~30 seconds. Then:
+> "The agent reads the spec file and captures all requirements. It knows the interface, the criteria, the constraints."
 
 ```
-/speckit.implement
+/clarify
 ```
+*(optional — use if the spec has any ambiguity)*
+> "If anything is unclear, /clarify asks you questions before planning. Prevents surprises."
 
-**What to Say:**
+```
+/plan
+```
+> "Creates the full implementation strategy. Think of it as a blueprint from the spec."
 
-> "Now it's generating the code. The route handler. The database schema. The tests. All driven by the spec."
+```
+/tasks
+```
+> "Decomposes the plan into atomic, traceable work items. Each task links back to an acceptance criterion."
+
+```
+/analyze
+```
+*(optional — use for complex codebases)*
+> "Reads the existing codebase first, so the generated code fits what's already there."
+
+```
+/implement
+```
+> "Now it generates the code AND tests from each task."
 >
-> "Notice — it's not generating functions and hoping they're right. It's generating from the spec. The spec is the source of truth."
+> "Notice: no 'write me a function.' No 'add auth.' You defined WHAT. The pipeline figures out HOW."
 
 Wait until complete (1-2 minutes).
 
