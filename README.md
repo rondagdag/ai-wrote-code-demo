@@ -12,7 +12,7 @@ Companion repo for the talk: *"From Cool Demo to Production Code"*
 demo/
 ├── 00-starter/              Base project — types, middleware, routes, 14 tests
 ├── 01-vibe-coding/          Lovable: UI in 60 seconds, then break it
-├── 02-context-engineering/  Antigravity: Skills + KIs = better output
+├── 02-context-engineering/  GitHub Copilot: copilot-instructions.md = better output
 ├── 03-spec-driven/          spec-kit + Claude Code: specs as contracts
 ├── 04-copilot-agent/        GitHub Copilot: issue → PR, no human needed
 ├── 05-claude-github/        @claude: code review via PR mentions
@@ -34,7 +34,7 @@ Each step adds rigor, structure, and autonomy.
 
 **Demo 1: Vibe Coding** — Paste a prompt into Lovable. Working app in 60 seconds. Then ask for auth + database and watch it fall apart. *A-ha: fast ≠ shippable.*
 
-**Demo 2: Context Engineering** — Same prompt in Google Antigravity with Skills and Knowledge Items loaded. Auth, tests, and team patterns appear automatically. *A-ha: same prompt + context = dramatically better output.*
+**Demo 2: Context Engineering** — Same prompt in GitHub Copilot with `.github/copilot-instructions.md` loaded. Auth, tests, and team patterns appear automatically. *A-ha: same prompt + structured context = dramatically better output.*
 
 **Demo 3: Spec-Driven** — Write a 60-line spec. Run spec-kit slash commands in Claude Code (VS Code). 400+ lines of validated code with tests. *A-ha: the spec IS the review checklist.*
 
@@ -68,7 +68,7 @@ Each step adds rigor, structure, and autonomy.
 ## Resources
 
 - [Lovable](https://lovable.dev) — Vibe coding
-- [Google Antigravity](https://antigravity.google) — Context engineering
+- [GitHub Copilot](https://github.com/features/copilot) — Context engineering
 - [spec-kit](https://github.com/github/spec-kit) — Spec-driven development
 - [GitHub Copilot](https://github.com/features/copilot) — Copilot coding agent
 - [Claude Code GitHub Actions](https://github.com/anthropics/claude-code-action) — @claude in GitHub

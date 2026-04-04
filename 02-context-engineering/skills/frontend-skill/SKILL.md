@@ -1,9 +1,9 @@
 # Frontend Development Skill — VoteJam
 
 ## Purpose
-This Skill equips the Antigravity agent with frontend development patterns,
-accessibility standards, and React best practices for the VoteJam UI.
-Automatically loads when working in `src/components/`, `src/hooks/`, or styling files.
+This file provides frontend development patterns, accessibility standards, and React best
+practices for the VoteJam UI — structured for use as GitHub Copilot custom instructions.
+Include this in `.github/copilot-instructions.md` when working on frontend features.
 
 ---
 
