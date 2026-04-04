@@ -26,18 +26,22 @@ Walk through the 5 sections:
 5. **Test Scenarios** — happy path + 10 edge cases
 
 ### Step 2: RUN the Pipeline (3 min)
-In Claude Code agent mode, run these slash commands:
+In Claude Code agent mode, run these slash commands in order:
 
 ```
-/speckit.plan     → agent creates implementation strategy
-/speckit.tasks    → decomposes into atomic work items
-/speckit.implement → generates code + tests from tasks
+/constitution  → set project guardrails (one-time)
+/specify       → agent reads your spec file
+/plan          → creates implementation strategy
+/tasks         → decomposes into atomic work items
+/implement     → generates code + tests
 ```
+
+Optional: `/clarify` between /specify and /plan if anything is ambiguous. `/analyze` before /implement for complex codebases.
 
 **While running, narrate:**
-- "The agent reads the spec and decomposes it into tasks."
+- "The agent reads the spec and captures every requirement."
 - "Each task traces back to an acceptance criterion."
-- "Code AND tests are generated together. The spec is the test plan."
+- "Code AND tests generated together. The spec is the test plan."
 
 ### Step 3: SHOW Results (2 min)
 Run: `/speckit.checklist` (or `npm test && npx tsc --noEmit`)

@@ -131,7 +131,7 @@ This keeps the energy and momentum. The audience still sees the magic, just with
 "No. It's 70-80% there—super useful, but reviewers always catch things. That's why the PR review step is crucial."
 
 **"Does it follow our patterns?"**
-"In this repo, yes, because it read the codebase and CLAUDE.md. With a new codebase, you might need to help it understand your patterns first."
+"In this repo, yes, because it read the codebase and our `.github/copilot-instructions.md`. With a new codebase, create that file first — it's the team standards the agent reads before writing anything."
 
 **"What if it misunderstands the issue?"**
 "Same as with a junior dev. You can comment on the PR, or re-open the issue with clarification and re-assign."
