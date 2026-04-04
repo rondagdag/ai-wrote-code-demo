@@ -1,23 +1,40 @@
+---
+name: frontend-ui
+description: >
+  Frontend React/TypeScript patterns for VoteJam's UI layer.
+  Use when building components, hooks, forms, API calls from the client,
+  or vote interactions with optimistic updates.
+  Activates automatically when working on src/components/, src/hooks/,
+  src/pages/, or any .tsx file.
+allowed-tools:
+  - read_file
+  - write_file
+---
+
 # Frontend UI Skill — VoteJam
 
-> **How to use:** Reference this file in Copilot Chat with `#file:skills/frontend-ui.md` when building React components, hooks, or UI interactions. Gives Copilot deep frontend domain knowledge on top of the always-on `copilot-instructions.md`.
+This skill loads automatically when Copilot detects frontend/React work. It provides deep UI patterns on top of the always-on `.github/copilot-instructions.md`.
 
 ---
 
-## When to Load This Skill
+## Component Checklist
 
-Load this file when:
-- Adding a new React component
-- Building a form or data-fetching hook
-- Working on vote interactions or animations
-- Styling with Tailwind
+Before committing any component:
+
+- [ ] Props fully typed — no `any`
+- [ ] Loading state shown while fetching
+- [ ] Error state handled and displayed to user
+- [ ] Empty state handled (no data case)
+- [ ] Buttons disabled while async action is in progress
+- [ ] API calls in a custom hook — not inline in JSX
+- [ ] Optimistic updates on vote/mutation for perceived performance
+- [ ] Keyboard accessible — use `<button>`, not `<div onClick>`
 
 ---
 
-## Component Structure Pattern
+## Component Structure
 
 ```typescript
-// Every component: typed props, named export, descriptive JSDoc
 import { useState } from 'react';
 
 interface SongCardProps {
@@ -50,9 +67,21 @@ export function SongCard({ song, currentUserId, onVote }: SongCardProps) {
         <p className="text-sm text-gray-500 truncate">{song.artist}</p>
       </div>
       <div className="flex items-center gap-2">
-        <VoteButton direction="up" onClick={() => handleVote('up')} disabled={isVoting} />
+        <button
+          onClick={() => handleVote('up')}
+          disabled={isVoting}
+          className="bg-green-50 text-green-600 hover:bg-green-100 px-3 py-1 rounded-lg disabled:opacity-50"
+        >
+          ▲
+        </button>
         <span className="w-8 text-center font-bold text-gray-700">{song.votes}</span>
-        <VoteButton direction="down" onClick={() => handleVote('down')} disabled={isVoting} />
+        <button
+          onClick={() => handleVote('down')}
+          disabled={isVoting}
+          className="bg-red-50 text-red-500 hover:bg-red-100 px-3 py-1 rounded-lg disabled:opacity-50"
+        >
+          ▼
+        </button>
       </div>
       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
     </div>
@@ -62,20 +91,13 @@ export function SongCard({ song, currentUserId, onVote }: SongCardProps) {
 
 ---
 
-## Data Fetching Pattern
+## Data Fetching Hook Pattern
 
 ```typescript
-// Custom hook — all API calls go here, never in components directly
+// All API calls go in custom hooks — never fetch directly inside components
 import { useState, useEffect, useCallback } from 'react';
 
-interface UseSongsResult {
-  songs: Song[];
-  isLoading: boolean;
-  error: string | null;
-  refetch: () => void;
-}
-
-export function useSongs(): UseSongsResult {
+export function useSongs() {
   const [songs, setSongs] = useState<Song[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -86,8 +108,8 @@ export function useSongs(): UseSongsResult {
     try {
       const res = await fetch('/api/v1/songs');
       const body = await res.json();
-      if (!res.ok) throw new Error(body.error?.message ?? 'Failed to fetch songs');
-      setSongs(body.data);
+      if (!res.ok) throw new Error(body.error?.message ?? 'Failed to fetch');
+      setSongs(body.data.songs ?? body.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
@@ -106,7 +128,7 @@ export function useSongs(): UseSongsResult {
 ## API Call Pattern
 
 ```typescript
-// Always match the backend ApiResponse envelope
+// Always match the backend ApiResponse<T> envelope
 async function castVote(songId: string, direction: 'up' | 'down', token: string): Promise<Vote> {
   const res = await fetch(`/api/v1/songs/${songId}/vote`, {
     method: 'POST',
@@ -118,7 +140,6 @@ async function castVote(songId: string, direction: 'up' | 'down', token: string)
   });
 
   const body = await res.json();
-
   if (!res.ok) {
     // Map API error codes to user-friendly messages
     const messages: Record<string, string> = {
@@ -138,12 +159,10 @@ async function castVote(songId: string, direction: 'up' | 'down', token: string)
 ## Optimistic Update Pattern
 
 ```typescript
-// Update UI immediately, roll back on failure
 const handleVote = async (songId: string, direction: 'up' | 'down') => {
-  // 1. Save previous state
   const prev = songs;
 
-  // 2. Optimistic update
+  // Optimistic: update immediately for perceived performance
   setSongs(s =>
     s.map(song =>
       song.id === songId
@@ -155,7 +174,7 @@ const handleVote = async (songId: string, direction: 'up' | 'down') => {
   try {
     await castVote(songId, direction, authToken);
   } catch (err) {
-    // 3. Roll back
+    // Roll back on failure
     setSongs(prev);
     setError(err instanceof Error ? err.message : 'Vote failed');
   }
@@ -166,31 +185,14 @@ const handleVote = async (songId: string, direction: 'up' | 'down') => {
 
 ## Tailwind Design Tokens
 
-VoteJam uses a consistent color system. Always use these classes:
-
 | Element | Class |
 |---------|-------|
-| Card background | `bg-white border border-gray-100 rounded-xl shadow-sm` |
+| Card | `bg-white border border-gray-100 rounded-xl shadow-sm` |
 | Upvote button | `bg-green-50 text-green-600 hover:bg-green-100` |
 | Downvote button | `bg-red-50 text-red-500 hover:bg-red-100` |
 | Vote count | `font-bold text-gray-900` |
 | Song title | `font-semibold text-gray-900 truncate` |
-| Artist name | `text-sm text-gray-500` |
-| Error message | `text-sm text-red-500` |
-| Loading state | `animate-pulse bg-gray-100 rounded` |
-| Primary action | `bg-blue-600 text-white hover:bg-blue-700 rounded-lg px-4 py-2` |
-
----
-
-## Component Checklist
-
-Before committing any component:
-
-- [ ] Props are fully typed (no `any`)
-- [ ] Loading state shown while fetching
-- [ ] Error state handled and displayed
-- [ ] Empty state handled (no results)
-- [ ] Buttons disabled while async action is in progress
-- [ ] API calls are in a custom hook or utility — not inline in JSX
-- [ ] Optimistic updates on vote/mutation for perceived performance
-- [ ] Keyboard accessible (buttons, not divs)
+| Artist | `text-sm text-gray-500` |
+| Error | `text-sm text-red-500` |
+| Loading skeleton | `animate-pulse bg-gray-100 rounded` |
+| Primary button | `bg-blue-600 text-white hover:bg-blue-700 rounded-lg px-4 py-2` |
