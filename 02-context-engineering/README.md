@@ -10,11 +10,14 @@ Same prompt complexity as Demo 1 → dramatically better output. The difference?
 - **`@workspace`** — References the entire codebase during generation
 
 ### Pre-flight
+
+> **Setup:** Copy `02-context-engineering/.github/copilot-instructions.md` into your VoteJam repo at `.github/copilot-instructions.md`. GitHub Copilot picks it up automatically — no config needed.
+
 - [ ] VS Code open with VoteJam project loaded
-- [ ] GitHub Copilot extension active (check status bar)
+- [ ] GitHub Copilot extension active (check status bar — look for the Copilot icon)
 - [ ] Copilot Chat panel open (Ctrl+Alt+I / Cmd+Option+I)
-- [ ] `.github/copilot-instructions.md` visible in Explorer
-- [ ] Font size: 18pt+ in both editor and chat
+- [ ] `.github/copilot-instructions.md` visible in Explorer sidebar
+- [ ] Font size: 18pt+ in both editor and chat panel
 
 ### Step 1: SHOW Context File (1.5 min)
 Open `.github/copilot-instructions.md` in the editor.

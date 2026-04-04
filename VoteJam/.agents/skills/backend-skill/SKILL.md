@@ -1,9 +1,10 @@
 # Backend Development Skill — VoteJam
 
 ## Purpose
-This Skill equips the Antigravity agent with backend development patterns,
-security rules, and testing conventions for the VoteJam Express/PostgreSQL API.
-Automatically loads when working in `src/routes/`, `src/repositories/`, or `src/middleware/`.
+This Skill provides backend development patterns, security rules, and testing
+conventions for the VoteJam Express/TypeScript API — structured for use as GitHub
+Copilot custom instructions. Include this in `.github/copilot-instructions.md` when
+working on API routes, repositories, or middleware.
 
 ---
 

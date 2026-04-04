@@ -371,7 +371,7 @@ These standards apply to **all** code contributions:
 - Pair programming sessions
 - Code reviews
 
-When Antigravity (or any AI agent) generates code, it should follow these standards automatically.
+When GitHub Copilot (or any AI agent) generates code, it should follow these standards automatically.
 If generated code violates these rules, it's a hint that the Backend-Skill or Frontend-Skill
 needs to be updated.
 
