@@ -51,7 +51,7 @@ Each step adds rigor, structure, and autonomy.
 | **Speed** | Minutes | Hours | Hours | Hours (async) |
 | **Consistency** | Low | High | Highest | High + guardrails |
 | **Best For** | Prototypes | Feature dev | Production | Workflow automation |
-| **Key Artifact** | Prompt | Skills + KIs | Spec file | Workflows + issues |
+| **Key Artifact** | Prompt | copilot-instructions.md | Spec file | Workflows + issues |
 
 **Rule of thumb:** Match the method to the risk.
 
@@ -70,7 +70,7 @@ Each step adds rigor, structure, and autonomy.
 - [Lovable](https://lovable.dev) — Vibe coding
 - [GitHub Copilot](https://github.com/features/copilot) — Context engineering
 - [spec-kit](https://github.com/github/spec-kit) — Spec-driven development
-- [GitHub Copilot](https://github.com/features/copilot) — Copilot coding agent
+- [GitHub Copilot Coding Agent](https://github.com/features/copilot) — Copilot coding agent
 - [Claude Code GitHub Actions](https://github.com/anthropics/claude-code-action) — @claude in GitHub
 
 ---
