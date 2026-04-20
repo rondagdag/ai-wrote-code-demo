@@ -204,3 +204,9 @@ describe('POST /api/v1/songs/:songId/vote', () => {
 - ❌ Don't put SQL or data access in route handlers — use repositories
 - ❌ Don't generate UUIDs in route handlers — let the repository layer own ID creation
 - ❌ Don't use `console.log` for debugging in committed code — use structured logging or remove it
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+at specs/001-song-voting/plan.md
+<!-- SPECKIT END -->

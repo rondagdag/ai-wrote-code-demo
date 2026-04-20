@@ -1,13 +1,13 @@
 import { Router, Request, Response } from 'express';
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 import { z } from 'zod';
 import { requireAuth } from '../middleware/auth';
 import { validateBody } from '../middleware/validation';
-import { rateLimit } from '../middleware/rateLimit';
 import { songRepo } from '../repositories/songRepo';
 import { AppError } from '../utils/errors';
 import { ApiResponse } from '../types/ApiResponse';
 import { Song } from '../types/Song';
+import { VoteResponse } from '../types/VoteResponse';
 
 const router = Router();
 
@@ -22,10 +22,10 @@ const VoteSongSchema = z.object({
 
 const voteLimiter = rateLimit({
   windowMs: 60 * 1000,
-  max: 5,
+  max: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.user?.id ?? req.ip,
+  keyGenerator: (req) => req.user?.id ?? ipKeyGenerator(req.ip ?? ''),
   handler: (req, res, next) => {
     next(new AppError('Too many vote requests', 429, 'RATE_LIMITED'));
   },
@@ -79,24 +79,18 @@ router.post(
     const { direction } = req.body;
     const userId = req.user!.id;
 
-    const song = songRepo.getById(songId);
-    if (!song) {
+    const uuidParse = z.string().uuid().safeParse(songId);
+    if (!uuidParse.success) {
+      throw new AppError('Invalid song ID format', 400, 'VALIDATION_ERROR');
+    }
+
+    const result = songRepo.vote(songId, userId, direction);
+    if (!result) {
       throw new AppError('Song not found', 404, 'NOT_FOUND');
     }
 
-    if (songRepo.hasUserVoted(songId, userId)) {
-      throw new AppError('User has already voted for this song', 409, 'CONFLICT');
-    }
-
-    const updatedSong = songRepo.updateVotes(songId, direction);
-    if (!updatedSong) {
-      throw new AppError('Song not found', 404, 'NOT_FOUND');
-    }
-
-    songRepo.recordVote(songId, userId);
-
-    const response: ApiResponse<Song> = {
-      data: updatedSong,
+    const response: ApiResponse<VoteResponse> = {
+      data: result,
       error: null,
     };
 

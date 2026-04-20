@@ -27,8 +27,9 @@ describe('POST /api/v1/songs/:songId/vote', () => {
 
     expect(res.status).toBe(200);
     expect(res.body.data).toBeDefined();
-    expect(res.body.data.id).toBe(songId);
+    expect(res.body.data.songId).toBe(songId);
     expect(res.body.data.votes).toBe(1);
+    expect(res.body.data.userVote).toBe('up');
     expect(res.body.error).toBeNull();
   });
 
@@ -55,26 +56,58 @@ describe('POST /api/v1/songs/:songId/vote', () => {
     expect(res.body.error.code).toBe('VALIDATION_ERROR');
   });
 
-  it('returns 409 when user has already voted on this song', async () => {
+  it('returns 200 with userVote null when same direction voted twice (toggle-off)', async () => {
     const songId = await createSong('Song 1', 'Artist 1');
 
     await request(app)
       .post(`/api/v1/songs/${songId}/vote`)
-      .set('Authorization', 'Bearer duplicate-token')
+      .set('Authorization', 'Bearer toggle-token')
       .send({ direction: 'up' });
 
     const res = await request(app)
       .post(`/api/v1/songs/${songId}/vote`)
-      .set('Authorization', 'Bearer duplicate-token')
+      .set('Authorization', 'Bearer toggle-token')
+      .send({ direction: 'up' });
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.userVote).toBeNull();
+    expect(res.body.data.votes).toBe(0);
+    expect(res.body.error).toBeNull();
+  });
+
+  it('returns 200 with new direction when user changes vote direction', async () => {
+    const songId = await createSong('Song 1', 'Artist 1');
+
+    await request(app)
+      .post(`/api/v1/songs/${songId}/vote`)
+      .set('Authorization', 'Bearer change-token')
+      .send({ direction: 'up' });
+
+    const res = await request(app)
+      .post(`/api/v1/songs/${songId}/vote`)
+      .set('Authorization', 'Bearer change-token')
       .send({ direction: 'down' });
 
-    expect(res.status).toBe(409);
-    expect(res.body.error.code).toBe('CONFLICT');
+    expect(res.status).toBe(200);
+    expect(res.body.data.userVote).toBe('down');
+    expect(res.body.data.votes).toBe(-1);
+    expect(res.body.error).toBeNull();
+  });
+
+  it('returns 400 when songId is not a valid UUID', async () => {
+    const res = await request(app)
+      .post('/api/v1/songs/not-a-uuid/vote')
+      .set('Authorization', 'Bearer uuid-token')
+      .send({ direction: 'up' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('VALIDATION_ERROR');
   });
 
   it('returns 404 when song does not exist', async () => {
+    const nonExistentId = '00000000-0000-0000-0000-000000000000';
     const res = await request(app)
-      .post('/api/v1/songs/non-existent-song/vote')
+      .post(`/api/v1/songs/${nonExistentId}/vote`)
       .set('Authorization', 'Bearer missing-song-token')
       .send({ direction: 'up' });
 
@@ -86,12 +119,12 @@ describe('POST /api/v1/songs/:songId/vote', () => {
     const voterToken = 'Bearer rate-limit-token';
 
     const songIds = await Promise.all(
-      Array.from({ length: 6 }, (_, index) =>
+      Array.from({ length: 11 }, (_, index) =>
         createSong(`Rate Song ${index}`, `Rate Artist ${index}`)
       )
     );
 
-    for (let index = 0; index < 5; index += 1) {
+    for (let index = 0; index < 10; index += 1) {
       const okRes = await request(app)
         .post(`/api/v1/songs/${songIds[index]}/vote`)
         .set('Authorization', voterToken)
@@ -101,7 +134,7 @@ describe('POST /api/v1/songs/:songId/vote', () => {
     }
 
     const limitedRes = await request(app)
-      .post(`/api/v1/songs/${songIds[5]}/vote`)
+      .post(`/api/v1/songs/${songIds[10]}/vote`)
       .set('Authorization', voterToken)
       .send({ direction: 'up' });
 

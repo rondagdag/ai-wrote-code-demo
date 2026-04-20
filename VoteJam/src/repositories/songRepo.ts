@@ -1,9 +1,10 @@
 import { Song } from '../types/Song';
+import { VoteResponse } from '../types/VoteResponse';
 import { randomUUID } from 'crypto';
 
 class SongRepository {
   private songs: Map<string, Song> = new Map();
-  private songVoters: Map<string, Set<string>> = new Map();
+  private songVoters: Map<string, Map<string, 'up' | 'down'>> = new Map();
 
   getAll(): Song[] {
     return Array.from(this.songs.values()).sort((a, b) => b.votes - a.votes);
@@ -24,43 +25,34 @@ class SongRepository {
     return newSong;
   }
 
-  updateVotes(id: string, userId: string, direction: 'up' | 'down'): Song | undefined {
-    if (this.hasUserVoted(id, userId)) {
-      return undefined;
-    }
-
-    const song = this.songs.get(id);
+  vote(songId: string, userId: string, direction: 'up' | 'down'): VoteResponse | undefined {
+    const song = this.songs.get(songId);
     if (!song) return undefined;
 
-    if (direction === 'up') {
-      song.votes += 1;
-    } else if (direction === 'down') {
-      song.votes = Math.max(0, song.votes - 1);
+    const voters = this.songVoters.get(songId) ?? new Map<string, 'up' | 'down'>();
+    const existing = voters.get(userId);
+
+    let userVote: 'up' | 'down' | null;
+
+    if (existing === direction) {
+      // Toggle off: same direction → remove vote
+      voters.delete(userId);
+      song.votes += direction === 'up' ? -1 : 1;
+      userVote = null;
+    } else if (existing !== undefined) {
+      // Change direction
+      voters.set(userId, direction);
+      song.votes += direction === 'up' ? 2 : -2;
+      userVote = direction;
+    } else {
+      // New vote
+      voters.set(userId, direction);
+      song.votes += direction === 'up' ? 1 : -1;
+      userVote = direction;
     }
 
-    let votes = this.userVotes.get(id);
-    if (!votes) {
-      votes = new Set<string>();
-      this.userVotes.set(id, votes);
-    }
-    votes.add(userId);
-
-    return song;
-  }
-
-  hasUserVoted(songId: string, userId: string): boolean {
-    const voters = this.songVoters.get(songId);
-    if (!voters) return false;
-    return voters.has(userId);
-  }
-
-  recordVote(songId: string, userId: string): void {
-    let voters = this.songVoters.get(songId);
-    if (!voters) {
-      voters = new Set<string>();
-      this.songVoters.set(songId, voters);
-    }
-    voters.add(userId);
+    this.songVoters.set(songId, voters);
+    return { songId, votes: song.votes, userVote };
   }
 
   delete(id: string): boolean {
