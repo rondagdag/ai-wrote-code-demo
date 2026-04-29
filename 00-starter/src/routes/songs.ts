@@ -39,6 +39,24 @@ router.post(
   }
 );
 
+// GET /api/v1/songs/search - Search songs by title or artist
+router.get('/api/v1/songs/search', (req: Request, res: Response) => {
+  const q = req.query.q;
+
+  if (!q || typeof q !== 'string' || q.trim() === '') {
+    throw new AppError('Query parameter "q" is required', 400, 'VALIDATION_ERROR');
+  }
+
+  const songs = songRepo.search(q.trim());
+
+  const response: ApiResponse<Song[]> = {
+    data: songs,
+    error: null,
+  };
+
+  res.status(200).json(response);
+});
+
 // GET /api/v1/songs - List all songs
 router.get('/api/v1/songs', (req: Request, res: Response) => {
   const songs = songRepo.getAll();
