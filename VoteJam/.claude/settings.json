@@ -1,0 +1,6 @@
+{
+  "project": "votejam",
+  "agent": "claude",
+  "specDir": "specs",
+  "context": ["CLAUDE.md"]
+}

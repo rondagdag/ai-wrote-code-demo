@@ -5,7 +5,7 @@
 - [ ] VS Code open with Claude Code extension in agent mode
 - [ ] Terminal ready in VS Code
 - [ ] spec-kit installed: `uv tool install specify-cli --from git+https://github.com/github/spec-kit.git`
-- [ ] Project initialized: `specify init votejam --ai claude`
+- [ ] Project initialized: `specify init . --ai claude`
 - [ ] Spec file: `specs/voting-feature.spec.md` present and readable
 - [ ] Run the pipeline once and save output files as backup
 - [ ] GitHub PR pre-created and link ready
